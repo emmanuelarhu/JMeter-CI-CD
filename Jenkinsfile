@@ -12,7 +12,7 @@ pipeline {
     environment {
 		COMPOSE_PROJECT_NAME = "jmeter-ci-${BUILD_NUMBER}"
         TIMESTAMP = sh(script: "date +%Y%m%d_%H%M%S", returnStdout: true).trim()
-        RESULTS_FILE = "detailed-results_${TIMESTAMP}.csv"
+        RESULTS_FILE = "results_${TIMESTAMP}.csv"
         REPORT_DIR = "report_${TIMESTAMP}"
     }
 
@@ -84,7 +84,7 @@ pipeline {
                 		# Run JMeter test
                 			jmeter -n \
                             -t test-plans/${JMX_FILE} \
-    						-l test-data/${RESULTS_FILE} \
+    						-l results/${RESULTS_FILE} \
     						-q user.properties \
     						-e -o results/${REPORT_DIR} \
     						-Jthreads=${THREADS} \
@@ -103,7 +103,7 @@ pipeline {
 				script {
 					def summary = sh(
                         script: '''
-                            if [ -f test-data/${RESULTS_FILE} ]; then
+                            if [ -f results/${RESULTS_FILE} ]; then
                                 awk -F',' 'NR>1 {
                                     total++; rt+=$2;
                                     if($8=="true") errors++
@@ -111,7 +111,7 @@ pipeline {
                                     printf "Total Requests: %d\\n", total
                                     printf "Average Response Time: %.0fms\\n", rt/total
                                     printf "Error Rate: %.1f%%\\n", errors/total*100
-                                }' test-data/${RESULTS_FILE}
+                                }' results/${RESULTS_FILE}
                             else
                                 echo "Results file not found"
                             fi
@@ -140,7 +140,7 @@ pipeline {
                 ])
 
                 echo "Reports published successfully"
-                echo "Grafana Dashboard: http://localhost:3000 (admin/admin123)"
+                echo "Grafana Dashboard: http://localhost:3001 (admin/admin)"
             }
         }
     }
@@ -156,7 +156,7 @@ pipeline {
         success {
 			echo "Performance test completed successfully"
             echo "HTML Report: ${BUILD_URL}JMeter_20Performance_20Report/"
-            echo "Grafana: http://localhost:3000"
+            echo "Grafana: http://localhost:3001"
         }
 
         failure {
