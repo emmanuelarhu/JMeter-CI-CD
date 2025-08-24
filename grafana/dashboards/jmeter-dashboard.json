@@ -1,0 +1,25 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "JMeter Performance Dashboard",
+    "tags": ["jmeter", "performance"],
+    "timezone": "browser",
+    "refresh": "5s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Response Time",
+        "type": "graph",
+        "targets": [
+          {
+            "rawSql": "SELECT mean(\"avg\") FROM \"jmeter\" WHERE \"transaction\" != 'all' AND $timeFilter GROUP BY time($__interval), \"transaction\" fill(null)"
+          }
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    }
+  }
+}
