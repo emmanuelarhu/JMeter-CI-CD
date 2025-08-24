@@ -186,7 +186,7 @@ pipeline {
                 }
 
                 slackSend(
-                    color: metrics.ERROR_RATE as Float > 5 ? 'warning' : 'good',
+                    color: (metrics.ERROR_RATE as Float) > 5 ? 'warning' : 'good',
                     message: """
 						📊 *PERFORMANCE TEST COMPLETED*
 							*Job:* ${env.JOB_NAME}
