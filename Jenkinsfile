@@ -3,7 +3,6 @@ pipeline {
 		label 'linux-agent'
 	}
 
-
     parameters {
 		string(name: 'JMX_FILE', defaultValue: 'FakeAPIStore-Test-Plan.jmx', description: 'JMeter test plan file')
         string(name: 'THREADS', defaultValue: '50', description: 'Number of threads')
@@ -63,7 +62,7 @@ pipeline {
             		echo "=== Full path being used ==="
             		echo "Looking for: $(pwd)/test-plans/${JMX_FILE}"
 
-            		echo "=== Check if file exists ==="
+            		echo "=== Check if file exists --> Okay? ==="
             		test -f "test-plans/${JMX_FILE}" && echo "File exists" || echo "File NOT found"
         		'''
     		}
