@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  influxdb:
+    image: influxdb:1.11.8
+    container_name: jmeter-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=jmeter
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+    networks:
+      - jmeter-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: jmeter-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - jmeter-network
+    depends_on:
+      - influxdb
+
+  jmeter:
+    build: .
+    container_name: jmeter-runner
+    volumes:
+      - ./test-plans:/tests
+      - ./results:/results
+    networks:
+      - jmeter-network
+    depends_on:
+      - influxdb
+    profiles:
+      - test
+
+networks:
+  jmeter-network:
+    driver: bridge
+
+volumes:
+  influxdb_data:
+  grafana_data:
