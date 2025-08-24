@@ -90,9 +90,6 @@ pipeline {
     						-Jrampup=${RAMP_UP} \
     						-Jduration=${DURATION}
 
-                        # Copy results from container
-                        docker cp jmeter-runner:/results ./
-
                         echo "JMeter test completed"
                         ls -la results/
                     '''
