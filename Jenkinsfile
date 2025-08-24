@@ -4,7 +4,7 @@ pipeline {
 	}
 
     parameters {
-		string(name: 'JMX_FILE', defaultValue: 'FakeAPIStore-Test-Plan.jmx', description: 'JMeter test plan file')
+		string(name: 'JMX_FILE', defaultValue: 'FakeAPIStore-Test-Plan.jmx', description: 'Your JMeter test plan file')
         string(name: 'THREADS', defaultValue: '5', description: 'Number of threads')
         string(name: 'DURATION', defaultValue: '20', description: 'Test duration in seconds')
     }
