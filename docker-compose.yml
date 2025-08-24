@@ -29,7 +29,7 @@ services:
       - influxdb
 
   jmeter:
-    build: .
+    image: justb4/jmeter:5.5
     container_name: jmeter-runner
     volumes:
       - ./test-plans:/tests
