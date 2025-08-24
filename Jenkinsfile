@@ -47,6 +47,28 @@ pipeline {
             }
         }
 
+        stage('Debug - Check Paths') {
+			steps {
+
+				sh '''
+            		echo "=== Current working directory ==="
+            		pwd
+
+            		echo "=== Directory contents ==="
+            		ls -la
+
+            		echo "=== test-plans folder contents ==="
+            		ls -la test-plans/ || echo "test-plans folder not found"
+
+            		echo "=== Full path being used ==="
+            		echo "Looking for: $(pwd)/test-plans/${JMX_FILE}"
+
+            		echo "=== Check if file exists ==="
+            		test -f "test-plans/${JMX_FILE}" && echo "File exists" || echo "File NOT found"
+        		'''
+    		}
+		}
+
 
         stage('Run JMeter Test') {
 			steps {
