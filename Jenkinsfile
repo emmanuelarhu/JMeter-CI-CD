@@ -85,6 +85,7 @@ pipeline {
                 			jmeter -n \
                             -t test-plans/${JMX_FILE} \
     						-l results/${RESULTS_FILE} \
+    						-q user.properties \
     						-e -o results/${REPORT_DIR} \
     						-Jthreads=${THREADS} \
     						-Jrampup=${RAMP_UP} \
