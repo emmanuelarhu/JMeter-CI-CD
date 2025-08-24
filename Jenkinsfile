@@ -140,7 +140,7 @@ pipeline {
                 ])
 
                 echo "Reports published successfully"
-                echo "Grafana Dashboard: http://localhost:3000 (admin/admin123)"
+                echo "Grafana Dashboard: http://localhost:3001 (admin/admin)"
             }
         }
     }
