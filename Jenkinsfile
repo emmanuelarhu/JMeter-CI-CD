@@ -47,13 +47,21 @@ pipeline {
             }
         }
 
+
         stage('Run JMeter Test') {
 			steps {
 				script {
 					sh '''
+                		echo "Running JMeter test with ${THREADS} users..."
 
-                        echo "Running JMeter test..."
-                        docker-compose run --rm jmeter jmeter -n \
+                		# Ensure JMeter is available
+                		which jmeter || export PATH=/opt/apache-jmeter/bin:$PATH
+
+                		# Create results directory
+                		mkdir -p results
+
+                		# Run JMeter test
+                			jmeter -n \
                             -t /tests/${JMX_FILE} \
                             -l /results/${RESULTS_FILE} \
                             -e -o /results/${REPORT_DIR} \
