@@ -5,8 +5,8 @@ pipeline {
 
     parameters {
 		string(name: 'JMX_FILE', defaultValue: 'FakeAPIStore-Test-Plan.jmx', description: 'JMeter test plan file')
-        string(name: 'THREADS', defaultValue: '50', description: 'Number of threads')
-        string(name: 'DURATION', defaultValue: '60', description: 'Test duration in seconds')
+        string(name: 'THREADS', defaultValue: '5', description: 'Number of threads')
+        string(name: 'DURATION', defaultValue: '20', description: 'Test duration in seconds')
     }
 
     environment {
@@ -145,6 +145,7 @@ pipeline {
         }
     }
 
+
     post {
 		always {
 			// Archive artifacts
@@ -153,15 +154,35 @@ pipeline {
                            allowEmptyArchive: true
         }
 
-        success {
-			echo "Performance test completed successfully"
-            echo "HTML Report: ${BUILD_URL}JMeter_20Performance_20Report/"
-            echo "Grafana: http://localhost:3000"
-        }
+			success {
+				slackSend(
+    color: 'good', // green
+    message: """
+			✅ *BUILD SUCCESS*
+				*Job:* ${env.JOB_NAME}
+				*Build:* #${env.BUILD_NUMBER}
+				*Status:* SUCCESS
+				*Triggered By:* ${currentBuild.getBuildCauses()[0].shortDescription}
+				echo "Performance test completed successfully"
+            	echo "HTML Report: ${BUILD_URL}JMeter_20Performance_20Report/"
+            	echo "Grafana: http://localhost:3001"
+    		"""
+				)
+			}
 
         failure {
-			echo "Performance test failed"
-        }
+			slackSend(
+    			color: 'danger', // red
+    			message: """
+						❌ *BUILD FAILED*
+							*Job:* ${env.JOB_NAME}
+							*Build:* #${env.BUILD_NUMBER}
+							*Status:* FAILED
+							*Triggered By:* ${currentBuild.getBuildCauses()[0].shortDescription}
+							echo "Performance test failed"
+    					"""
+			)
+		}
 
         cleanup {
 			// Optional: Stop containers after test
