@@ -62,11 +62,12 @@ pipeline {
 
                 		# Run JMeter test
                 			jmeter -n \
-                            -t /tests/${JMX_FILE} \
-                            -l /results/${RESULTS_FILE} \
-                            -e -o /results/${REPORT_DIR} \
-                            -Jthreads=${THREADS} \
-                            -Jduration=${DURATION}
+                            -t test-plans/${JMX_FILE} \
+    						-l results/${RESULTS_FILE} \
+    						-e -o results/${REPORT_DIR} \
+    						-Jthreads=${THREADS} \
+    						-Jrampup=${RAMP_UP} \
+    						-Jduration=${DURATION}
 
                         # Copy results from container
                         docker cp jmeter-runner:/results ./
