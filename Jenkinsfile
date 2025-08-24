@@ -145,6 +145,7 @@ pipeline {
         }
     }
 
+
     post {
 		always {
 			// Archive artifacts
@@ -185,22 +186,31 @@ pipeline {
                     metrics[parts[0]] = parts[1]
                 }
 
+                // Determine status colors and messages
+                def errorRate = metrics.ERROR_RATE as Float
+                def responseTime = metrics.AVG_RESPONSE_TIME as Float
+                def successRate = metrics.SUCCESS_RATE as Float
+
+                def slackColor = errorRate > 5 ? 'warning' : 'good'
+                def overallStatus = errorRate <= 5 && responseTime <= 2000 ? 'PASS' : 'NEEDS ATTENTION'
+
                 slackSend(
-                    color: (metrics.ERROR_RATE as Float) > 5 ? 'warning' : 'good',
+                    color: slackColor,
                     message: """
-						📊 *PERFORMANCE TEST COMPLETED*
-							*Job:* ${env.JOB_NAME}
-							*Build:* #${env.BUILD_NUMBER}
-							*Test File:* ${params.JMX_FILE}
-							*Configuration:* ${params.THREADS} users, ${params.DURATION}s duration
+📊 *PERFORMANCE TEST COMPLETED*
+*Job:* ${env.JOB_NAME}
+*Build:* #${env.BUILD_NUMBER}
+*Test File:* ${params.JMX_FILE}
+*Configuration:* ${params.THREADS} users, ${params.DURATION}s duration
 
-						📈 *Results Summary:*
-							- Total Requests: ${metrics.TOTAL_REQUESTS}
-							- Success Rate: ${metrics.SUCCESS_RATE}%
-							- Error Rate: ${metrics.ERROR_RATE}%
-							- Avg Response Time: ${metrics.AVG_RESPONSE_TIME}ms
+📈 *Results Summary:*
+- Total Requests: ${metrics.TOTAL_REQUESTS}
+- Success Rate: ${metrics.SUCCESS_RATE}%
+- Error Rate: ${metrics.ERROR_RATE}%
+- Avg Response Time: ${metrics.AVG_RESPONSE_TIME}ms
+- Overall Status: ${overallStatus}
 
-							🔗 <${env.BUILD_URL}JMeter_20Performance_20Report/|Performance Report> | <${env.BUILD_URL}|Build Details> | <http://localhost:3000|Grafana Dashboard>
+🔗 <${env.BUILD_URL}JMeter_20Performance_20Report/|Performance Report> | <${env.BUILD_URL}|Build Details> | <http://localhost:3000|Grafana Dashboard>
                     """
                 )
 
@@ -224,33 +234,12 @@ pipeline {
 
                             <h3>📈 Performance Results</h3>
                             <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; margin: 10px 0;">
-                                <tr><th align="left" style="background-color: #f8f9fa;">Metric</th><th align="left" style="background-color: #f8f9fa;">Value</th><th align="left" style="background-color: #f8f9fa;">Status</th></tr>
-                                <tr>
-                                    <td>Total Requests</td>
-                                    <td><b>${metrics.TOTAL_REQUESTS}</b></td>
-                                    <td style="color: green;">✓</td>
-                                </tr>
-                                <tr>
-                                    <td>Success Rate</td>
-                                    <td><b>${metrics.SUCCESS_RATE}%</b></td>
-                                    <td style="color: ${metrics.SUCCESS_RATE as Float >= 95 ? 'green' : (metrics.SUCCESS_RATE as Float >= 90 ? 'orange' : 'red')};">
-                                        ${metrics.SUCCESS_RATE as Float >= 95 ? '✓ Excellent' : (metrics.SUCCESS_RATE as Float >= 90 ? '⚠ Good' : '✗ Needs Attention')}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Error Rate</td>
-                                    <td><b>${metrics.ERROR_RATE}%</b></td>
-                                    <td style="color: ${metrics.ERROR_RATE as Float <= 1 ? 'green' : (metrics.ERROR_RATE as Float <= 5 ? 'orange' : 'red')};">
-                                        ${metrics.ERROR_RATE as Float <= 1 ? '✓ Excellent' : (metrics.ERROR_RATE as Float <= 5 ? '⚠ Acceptable' : '✗ High')}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Avg Response Time</td>
-                                    <td><b>${metrics.AVG_RESPONSE_TIME}ms</b></td>
-                                    <td style="color: ${metrics.AVG_RESPONSE_TIME as Float <= 1000 ? 'green' : (metrics.AVG_RESPONSE_TIME as Float <= 2000 ? 'orange' : 'red')};">
-                                        ${metrics.AVG_RESPONSE_TIME as Float <= 1000 ? '✓ Fast' : (metrics.AVG_RESPONSE_TIME as Float <= 2000 ? '⚠ Acceptable' : '✗ Slow')}
-                                    </td>
-                                </tr>
+                                <tr><th align="left" style="background-color: #f8f9fa;">Metric</th><th align="left" style="background-color: #f8f9fa;">Value</th></tr>
+                                <tr><td>Total Requests</td><td><b>${metrics.TOTAL_REQUESTS}</b></td></tr>
+                                <tr><td>Success Rate</td><td><b>${metrics.SUCCESS_RATE}%</b></td></tr>
+                                <tr><td>Error Rate</td><td><b>${metrics.ERROR_RATE}%</b></td></tr>
+                                <tr><td>Avg Response Time</td><td><b>${metrics.AVG_RESPONSE_TIME}ms</b></td></tr>
+                                <tr><td>Overall Status</td><td><b style="color: ${overallStatus == 'PASS' ? 'green' : 'red'};">${overallStatus}</b></td></tr>
                             </table>
 
                             <h3>📊 Reports & Dashboards</h3>
@@ -260,14 +249,6 @@ pipeline {
                                 <li><a href="${env.BUILD_URL}" style="color: blue;">🔧 Jenkins Build Details</a></li>
                                 <li><a href="${env.BUILD_URL}console" style="color: blue;">📝 Console Output</a></li>
                             </ul>
-
-                            <h3>🎯 Performance Assessment</h3>
-                            <p style="padding: 10px; background-color: ${metrics.ERROR_RATE as Float <= 5 && metrics.AVG_RESPONSE_TIME as Float <= 2000 ? '#d4edda; color: #155724; border-left: 4px solid #28a745;' : '#f8d7da; color: #721c24; border-left: 4px solid #dc3545;'}">
-                                <b>Overall Status:</b>
-                                ${metrics.ERROR_RATE as Float <= 5 && metrics.AVG_RESPONSE_TIME as Float <= 2000 ?
-                                  'Performance targets met - System performing within acceptable limits' :
-                                  'Performance issues detected - Review required'}
-                            </p>
 
                             <p>Regards,<br><b>Performance Testing Team</b></p>
                         </body>
@@ -283,14 +264,15 @@ pipeline {
 			slackSend(
                 color: 'danger',
                 message: """
-					❌ *PERFORMANCE TEST FAILED*
-						*Job:* ${env.JOB_NAME}
-						*Build:* #${env.BUILD_NUMBER}
-						*Test File:* ${params.JMX_FILE}
-						*Status:* FAILED
-							*Configuration:* ${params.THREADS} users, ${params.DURATION}s duration
+❌ *PERFORMANCE TEST FAILED*
+*Job:* ${env.JOB_NAME}
+*Build:* #${env.BUILD_NUMBER}
+*Test File:* ${params.JMX_FILE}
+*Status:* FAILED
 
-						🔗 <${env.BUILD_URL}|Build Details> | <${env.BUILD_URL}console|Console Output>
+*Configuration:* ${params.THREADS} users, ${params.DURATION}s duration
+
+🔗 <${env.BUILD_URL}|Build Details> | <${env.BUILD_URL}console|Console Output>
                 """
             )
 
@@ -329,6 +311,7 @@ pipeline {
                 to: "notebooks8.8.8.8@gmail.com"
             )
         }
+
         cleanup {
 			// Optional: Stop containers after test
             sh 'docker-compose down || true'
