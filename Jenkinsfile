@@ -12,7 +12,7 @@ pipeline {
     environment {
 		COMPOSE_PROJECT_NAME = "jmeter-ci-${BUILD_NUMBER}"
         TIMESTAMP = sh(script: "date +%Y%m%d_%H%M%S", returnStdout: true).trim()
-        RESULTS_FILE = "results_${TIMESTAMP}.csv"
+        RESULTS_FILE = "detailed-results_${TIMESTAMP}.csv"
         REPORT_DIR = "report_${TIMESTAMP}"
     }
 
@@ -32,7 +32,7 @@ pipeline {
 
                     # Wait for InfluxDB to be ready
                     echo "Waiting for InfluxDB to start..."
-                    until curl -sf http://localhost:8086/ping; do
+                    until curl -sf http://localhost:8087/ping; do
                         echo "Waiting for InfluxDB..."
                         sleep 5
                     done
@@ -41,7 +41,7 @@ pipeline {
                     # Wait for Grafana
                     echo "Waiting for Grafana to start..."
                     sleep 15
-                    echo "Grafana should be ready at http://localhost:3000"
+                    echo "Grafana should be ready at http://localhost:3001"
                 '''
             }
         }
@@ -84,7 +84,7 @@ pipeline {
                 		# Run JMeter test
                 			jmeter -n \
                             -t test-plans/${JMX_FILE} \
-    						-l results/${RESULTS_FILE} \
+    						-l test-data/${RESULTS_FILE} \
     						-q user.properties \
     						-e -o results/${REPORT_DIR} \
     						-Jthreads=${THREADS} \
@@ -103,7 +103,7 @@ pipeline {
 				script {
 					def summary = sh(
                         script: '''
-                            if [ -f results/${RESULTS_FILE} ]; then
+                            if [ -f test-data/${RESULTS_FILE} ]; then
                                 awk -F',' 'NR>1 {
                                     total++; rt+=$2;
                                     if($8=="true") errors++
@@ -111,7 +111,7 @@ pipeline {
                                     printf "Total Requests: %d\\n", total
                                     printf "Average Response Time: %.0fms\\n", rt/total
                                     printf "Error Rate: %.1f%%\\n", errors/total*100
-                                }' results/${RESULTS_FILE}
+                                }' test-data/${RESULTS_FILE}
                             else
                                 echo "Results file not found"
                             fi

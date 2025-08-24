@@ -1,0 +1,16 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1756043531092,708,Get all Product Request,200,OK,Light Load Testing 1-1,text,true,,11382,126,1,1,https://fakestoreapi.com/products,706,0,426
+1756043535822,286,Add New Product Request,201,Created,Light Load Testing 1-1,text,true,,945,400,1,1,https://fakestoreapi.com/products,286,0,0
+1756043540116,192,Get a Single Product Request,200,OK,Light Load Testing 1-1,text,true,,1192,128,1,1,https://fakestoreapi.com/products/5,192,0,0
+1756043544317,292,Update a Product Request,200,OK,Light Load Testing 1-1,text,true,,951,407,1,1,https://fakestoreapi.com/products/1,291,0,0
+1756043548621,302,Delete a Product Request,200,OK,Light Load Testing 1-1,text,true,,1182,215,1,1,https://fakestoreapi.com/products/20,301,0,0
+1756043552938,329,Login Request,201,Created,Light Load Testing 1-1,text,true,,888,238,1,1,https://fakestoreapi.com/auth/login,329,0,0
+1756043557280,808,Get a single User Request,200,OK,Light Load Testing 1-1,text,true,,1030,125,1,1,https://fakestoreapi.com/users/1,808,0,0
+1756043562092,297,Get all users Request,200,OK,Light Load Testing 1-1,text,true,,3735,123,1,1,https://fakestoreapi.com/users,296,0,0
+1756043566394,285,Delete a User Request,200,OK,Light Load Testing 1-1,text,true,,1031,211,1,1,https://fakestoreapi.com/users/9,284,0,0
+1756043570691,222,Update a User Request,200,OK,Light Load Testing 1-1,text,true,,847,300,1,1,https://fakestoreapi.com/users/6,222,0,0
+1756043574931,458,Get all Carts  Request,200,OK,Light Load Testing 1-1,text,true,,1676,123,1,1,https://fakestoreapi.com/carts,458,0,0
+1756043579404,254,Add a New Cart Request,201,Created,Light Load Testing 1-1,text,true,,1030,532,1,1,https://fakestoreapi.com/carts/,254,0,0
+1756043583676,312,Get a Single Cart  Request,200,OK,Light Load Testing 1-1,text,true,,898,125,1,1,https://fakestoreapi.com/carts/1,311,0,0
+1756043587995,176,Update a Cart  Request,200,OK,Light Load Testing 1-1,text,true,,1020,534,1,1,https://fakestoreapi.com/carts/10,176,0,0
+1756043592180,768,Delete a Cart Request,200,OK,Light Load Testing 1-1,text,true,,732,207,1,1,https://fakestoreapi.com/carts/10,767,0,433
