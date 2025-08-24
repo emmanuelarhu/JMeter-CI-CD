@@ -51,8 +51,6 @@ pipeline {
 			steps {
 				script {
 					sh '''
-                        echo "Building JMeter Docker image..."
-                        docker-compose build jmeter
 
                         echo "Running JMeter test..."
                         docker-compose run --rm jmeter jmeter -n \
