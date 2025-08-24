@@ -1,5 +1,8 @@
 pipeline {
-	agent linux-agent
+	agent {
+		label 'linux-agent'
+	}
+
 
     parameters {
 		string(name: 'JMX_FILE', defaultValue: 'your-test.jmx', description: 'JMeter test plan file')
