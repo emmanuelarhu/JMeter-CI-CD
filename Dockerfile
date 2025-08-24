@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-slim
+FROM alpine:3.12
 
 # Install JMeter
 ENV JMETER_VERSION=5.6.3
